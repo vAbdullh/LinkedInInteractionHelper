@@ -4,6 +4,7 @@ import { LoginPage, SignOutButton } from './components/Auth'
 import { Dashboard } from './components/Dashboard'
 import { Queue } from './components/Queue'
 import { CsvImport } from './components/CsvImport'
+import { GenerateComments } from './components/GenerateComments'
 
 function App() {
   const { user, loading: authLoading } = useAuth()
@@ -40,6 +41,7 @@ function App() {
           <>
             <Dashboard posts={posts} />
             <Queue posts={posts} />
+            <GenerateComments posts={posts} />
           </>
         )}
 
