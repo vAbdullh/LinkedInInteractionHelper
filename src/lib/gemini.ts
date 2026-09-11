@@ -48,7 +48,7 @@ function extractFromUrl(url: string): { firstName: string; keywords: string[] } 
 export async function generateComments(
   posts: PostContext[]
 ): Promise<GeneratedComment[]> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 
   // Build the prompt with context per post
   const postDescriptions = posts.map((p, i) => {
