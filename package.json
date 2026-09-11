@@ -10,7 +10,6 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.24.1",
     "firebase": "^11.0.0",
     "papaparse": "^5.4.1",
     "react": "^18.3.1",

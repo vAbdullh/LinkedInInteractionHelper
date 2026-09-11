@@ -1,6 +1,7 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { getAI, getGenerativeModel, VertexAIBackend } from 'firebase/ai'
+import { app } from './firebase'
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY)
+const ai = getAI(app, { backend: new VertexAIBackend() })
 
 export interface PostContext {
   id: string
@@ -26,14 +27,12 @@ function extractFromUrl(url: string): { firstName: string; keywords: string[] } 
         const namePart = slug.split('_')[0]
         const nameWords = namePart.split('-')
         firstName = nameWords[0].charAt(0).toUpperCase() + nameWords[0].slice(1)
-
         const keywordPart = slug.split('_').slice(1).join('-')
         keywords = keywordPart
           .split('-')
           .filter((k) => k.length > 3)
           .slice(0, 5)
       } else if (pathParts[0] === 'in' && pathParts[1]) {
-        // Profile URL: linkedin.com/in/nawafalk
         const slug = pathParts[1].split('?')[0].split('-')
         firstName = slug[0].charAt(0).toUpperCase() + slug[0].slice(1)
       }
@@ -48,9 +47,8 @@ function extractFromUrl(url: string): { firstName: string; keywords: string[] } 
 export async function generateComments(
   posts: PostContext[]
 ): Promise<GeneratedComment[]> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+  const model = getGenerativeModel(ai, { model: 'gemini-2.0-flash' })
 
-  // Build the prompt with context per post
   const postDescriptions = posts.map((p, i) => {
     const { firstName, keywords } = extractFromUrl(p.link)
     const nameLabel = firstName ? `Name: ${firstName}` : 'Name: unknown'
@@ -74,10 +72,7 @@ ${postDescriptions.join('\n')}`
 
   const result = await model.generateContent(prompt)
   const text = result.response.text().trim()
-
-  // Strip markdown code fences if present
   const cleaned = text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim()
-
   const comments: string[] = JSON.parse(cleaned)
 
   return posts.map((p, i) => ({
